@@ -1,0 +1,48 @@
+<launch>
+	<!-- <param name="/use_sim_time" value="true"/> -->
+	<!-- Run the Gazebo Simulation World -->
+	<include file="$(find gazebo_ros)/launch/empty_world.launch"> 
+		<arg name="world_name" value="$(find turtlebot_astar)/world/map.world"/>  
+	</include> 
+	
+	<!-- Turtlebot3 name -->
+	<arg name="robot_name" value="turtlebot3_burger"/>
+
+	<!-- Start node -->
+	<arg name="start_x" default="-4"/>
+	<param name="start_x" value="$(arg start_x)"/>
+	
+	<arg name="start_y" default="-2"/>
+	<param name="start_y" value="$(arg start_y)"/>
+	
+	<arg name="start_theta" default="0"/>
+	<param name="start_theta" value="$(arg start_theta)"/>
+	
+	<!-- Goal node -->
+	<arg name="goal_x" default="-4"/>
+	<param name="goal_x" value="$(arg goal_x)"/>
+	
+	<arg name="goal_y" default="-4"/>
+	<param name="goal_y" value="$(arg goal_y)"/>
+	
+	<!-- RPM information -->
+	<arg name="rpm_1" default="10"/>
+	<param name="rpm_1" value="$(arg rpm_1)"/>
+	
+	<arg name="rpm_2" default="20"/>
+	<param name="rpm_2" value="$(arg rpm_2)"/>
+	
+	<!-- Robot Clearance -->
+	<arg name="clearance" default="0.2"/>
+	<param name="clearance" value="$(arg clearance)"/>
+
+	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find turtlebot3_description)/urdf/$(arg robot_name).urdf.xacro'"/>
+
+	<node pkg="gazebo_ros" type="spawn_model" name="spawn_$(arg robot_name)" 
+        args="-x $(arg start_x) -y $(arg start_y) -Y $(arg start_theta)
+        -unpause -urdf -param robot_description -model $(arg robot_name)" respawn="false">
+    </node>
+
+    <!-- Publisher Subscriber -->
+    <node pkg="turtlebot_astar" type="publisher_spawnrobot.py" name="publish_velocity" output="screen"/>
+</launch>

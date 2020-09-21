@@ -1,0 +1,27 @@
+<launch>
+	<param name="/use_sim_time" value="true"/>
+	<!-- Run the Gazebo Simulation World -->
+	<include file="$(find gazebo_ros)/launch/empty_world.launch"> 
+		<arg name="world_name" value="$(find turtlebot_astar)/world/map.world"/>  
+	</include> 
+	
+	<!-- Import turtlebot into my world at the given start position-->
+	<arg name="robot_name" value="turtlebot3_burger"/>
+	<arg name="initial_pose_x" value="-4.0"/>
+	<arg name="initial_pose_y" value="-4.0"/>
+	<arg name="initial_pose_a" value="0.0"/>
+
+	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find turtlebot3_description)/urdf/$(arg robot_name).urdf.xacro'"/>
+
+	<node pkg="gazebo_ros" type="spawn_model" name="spawn_$(arg robot_name)" 
+        args="-x $(arg initial_pose_x) -y $(arg initial_pose_y) -Y $(arg initial_pose_a)
+        -unpause -urdf -param robot_description -model $(arg robot_name)" respawn="false">
+    </node>
+
+    <!-- Publisher Subscriber -->
+    <node pkg="turtlebot_astar" type="publisher.py" name="publish_velocity" output="screen">
+    	<param name="npy_file_path" value="$(find turtlebot_astar)/src/path_dumps/path_vid2.npy"/>
+    </node>  
+    
+
+</launch>
